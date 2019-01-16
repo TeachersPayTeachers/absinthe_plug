@@ -142,7 +142,7 @@ defmodule Absinthe.Plug do
   - `:log_level` -- (Optional) Set the logger level for Absinthe Logger. Defaults to `:debug`.
   - `:analyze_complexity` -- (Optional) Set whether to calculate the complexity of incoming GraphQL queries.
   - `:max_complexity` -- (Optional) Set the maximum allowed complexity of the GraphQL query. If a document’s calculated complexity exceeds the maximum, resolution will be skipped and an error will be returned in the result detailing the calculated and maximum complexities.
-  
+
   """
   @type opts :: [
     schema: module,
@@ -245,7 +245,7 @@ defmodule Absinthe.Plug do
   def call(conn, config) do
     config = update_config(conn, config)
     {conn, result} = conn |> execute(config)
-
+    IO.inspect result, label: :bork
     case result do
       {:input_error, msg} ->
         conn
@@ -270,6 +270,10 @@ defmodule Absinthe.Plug do
       {:error, {:http_method, text}, _} ->
         conn
         |> encode(405, error_result(text), config)
+
+      {:error, %{status: status_code} = result} ->
+        conn
+        |> encode(status_code, result, config)
 
       {:error, error, _} when is_binary(error) ->
         conn

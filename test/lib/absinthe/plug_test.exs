@@ -448,6 +448,15 @@ defmodule Absinthe.PlugTest do
     assert conn.private[:user_id] == 1
   end
 
+  test "custom http response codes" do
+    opts = Absinthe.Plug.init(schema: TestSchema)
+    assert %{status: 666} = conn = conn(:post, "/", "{customError}")
+    |> put_req_header("content-type", "application/graphql")
+    |> plug_parser
+    |> Absinthe.Plug.call(opts)
+    # |> IO.inspect
+  end
+
   def test_before_send(conn, val) do
     send self(), {:before_send, val} # just for easy testing
     conn

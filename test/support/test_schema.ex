@@ -65,6 +65,12 @@ defmodule Absinthe.Plug.TestSchema do
         raise "complex string must not be resolved"
       end
     end
+
+    field :custom_error, :string do
+      resolve fn _, _ ->
+        {:error, %{status: 666, message: "hallo"}}
+      end
+    end
   end
 
   subscription do
